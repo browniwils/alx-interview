@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Minimum operation module."""
 
+
 def minOperations(n: int) -> int:
     """
     Determine the minimum opeartions for running
