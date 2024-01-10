@@ -29,6 +29,7 @@ def valid_log(log_string):
         req_info['file_size'] = file_size
     return req_info
 
+
 def display_log(file_size, status_stats):
     """Prints infofmation to standard output.
     """
@@ -38,6 +39,7 @@ def display_log(file_size, status_stats):
         if num > 0:
             print('{:s}: {:d}'.format(status_code, num), flush=True)
 
+
 def update_metrics(line, file_size, status_stats):
     """Update metrics of HTPP.
     """
@@ -46,6 +48,7 @@ def update_metrics(line, file_size, status_stats):
     if status_code in status_stats.keys():
         status_stats[status_code] += 1
     return file_size + line_info['file_size']
+
 
 def log_task():
     """Log parser.
