@@ -52,5 +52,5 @@ def log_task():
             display_log(codes=sorted_keys_dict, size = size)
 
 
-if "__main__" == __name__:
+if __name__ == '__main__':
     log_task()
