@@ -8,48 +8,73 @@ import re
 def valid_log(log_string):
     """Validate log inputs.
     """
-    patt = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3} - \[.*\] "GET \/projects\/260 HTTP\/1\.1" \d{3} \d+'
-    return re.match(patt, log_string)
+    patt = (
+        r'\s*(?P<ip>\S+)\s*',
+        r'\s*\[(?P<date>\d+\-\d+\-\d+ \d+:\d+:\d+\.\d+)\]',
+        r'\s*"(?P<request>[^"]*)"\s*',
+        r'\s*(?P<status_code>\S+)',
+        r'\s*(?P<file_size>\d+)'
+    )
+    req_info = {
+        'status_code': 0,
+        'file_size': 0,
+    }
+    log_format = '{}\\-{}{}{}{}\\s*'.format(patt[0], patt[1], patt[2],
+                                            patt[3], patt[4])
+    match = re.fullmatch(log_format, log_string)
+    if match is not None:
+        status_code = match.group('status_code')
+        file_size = int(match.group('file_size'))
+        req_info['status_code'] = status_code
+        req_info['file_size'] = file_size
+    return req_info
 
-def display_log(**kwargs):
+def display_log(file_size, status_stats):
     """Prints infofmation to standard output.
     """
-    for key in kwargs.keys():
-        if not isinstance(kwargs.get(key), dict):
-            print("File Size {}".format(kwargs.get(key)))
-        else:
-            for nested_k, nested_v in key.items():
-                print(f"{nested_k}: {nested_v}")
+    print('File size: {:d}'.format(file_size), flush=True)
+    for status_code in sorted(status_stats.keys()):
+        num = status_stats.get(status_code, 0)
+        if num > 0:
+            print('{:s}: {:d}'.format(status_code, num), flush=True)
+
+def update_metrics(line, file_size, status_stats):
+    """Update metrics of HTPP.
+    """
+    line_info = valid_log(line)
+    status_code = line_info.get('status_code', '0')
+    if status_code in status_stats.keys():
+        status_stats[status_code] += 1
+    return file_size + line_info['file_size']
 
 def log_task():
     """Log parser.
     """
-    while True:
-        try:
-            status_codes = {
-                "200": 0,
-                "301": 0,
-                "400": 0,
-                "401": 0,
-                "403": 0,
-                "404": 0,
-                "405": 0,
-                "500": 0
-
-            }
-            size = 0
-            for time in range(11):
-                info = input("").strip()
-                if valid_log(info):
-                    info_list = info.split(" ")
-                    fize_size = info_list[-1]
-                    s_code = info_list[-2]
-                    status_codes[s_code] = status_codes.get(s_code) + 1
-                    size += int(fize_size)
-                    sorted_keys_dict = {code: status_codes[code] for code in sorted(status_codes)}
-            display_log(codes=sorted_keys_dict, size = size)
-        except KeyboardInterrupt:
-            display_log(codes=sorted_keys_dict, size = size)
+    line_num = 0
+    file_size = 0
+    status_stats = {
+        '200': 0,
+        '301': 0,
+        '400': 0,
+        '401': 0,
+        '403': 0,
+        '404': 0,
+        '405': 0,
+        '500': 0,
+    }
+    try:
+        while True:
+            line = input()
+            file_size = update_metrics(
+                line,
+                file_size,
+                status_stats,
+            )
+            line_num += 1
+            if line_num % 10 == 0:
+                display_log(file_size, status_stats)
+    except (KeyboardInterrupt, EOFError):
+        display_log(file_size, status_stats)
 
 
 if __name__ == '__main__':
