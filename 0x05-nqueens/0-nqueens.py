@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """Script for running N queens program: solution finder."""
+
 import sys
-from typing import List
-from typing import Tuple
+
 
 class NQueens:
     """Class for N Queens objects."""
@@ -11,7 +11,7 @@ class NQueens:
     number_of_chessboard = 0
     position = None
 
-    def __init__(self) -> None:
+    def __init__(self):
         """Instanciate N Queen object."""
 
         self.possible_solutions = []
@@ -39,8 +39,7 @@ class NQueens:
             sys.exit(1)
         return self.number_of_chessboard
 
-    def _attacking(self, first_position: List | Tuple,
-                   second_position: List | Tuple) -> bool:
+    def _attacking(self, first_position, second_position):
         """Checks if two queens are in attacking mode.
 
         Args:
@@ -56,7 +55,7 @@ class NQueens:
         return (abs(first_position[0] - second_position[0]) 
                 == abs(first_position[1] - second_position[1]))
 
-    def group_exists(self, lists: List | int) -> bool:
+    def group_exists(self, lists):
         """Checks if there is a group the list of solution.
 
         Args:
@@ -77,7 +76,7 @@ class NQueens:
                 return True
         return False
 
-    def create_solution(self, row: int, group: list):
+    def create_solution(self, row, group):
         """Creates solution for n queens problem.
 
         Args:
