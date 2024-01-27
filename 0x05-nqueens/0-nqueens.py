@@ -49,11 +49,13 @@ class NQueens:
         Returns:
             bool: true if the queens are in an attacking position else false.
         """
-        if ((first_position[0] == second_position[0]) 
-            or (first_position[1] == second_position[1])):
+        condition_1 = first_position[0] == second_position[0]
+        condition_2 = first_position[1] == second_position[1]
+        if condition_1 or condition_2:
             return True
-        return (abs(first_position[0] - second_position[0]) 
-                == abs(first_position[1] - second_position[1]))
+        con_1 = abs(first_position[0] - second_position[0])
+        con_2 = abs(first_position[1] - second_position[1])
+        return con_1 == con_2
 
     def group_exists(self, lists):
         """Checks if there is a group the list of solution.
@@ -69,8 +71,9 @@ class NQueens:
             i = 0
             for solution_pos in solution:
                 for _list in lists:
-                    if (solution_pos[0] == _list[0]
-                        and solution_pos[1] == _list[1]):
+                    l_1 = solution_pos[1]
+                    l_2 = _list[1]
+                    if (solution_pos[0] == _list[0] and l_1 == l_2):
                         i += 1
             if i == self.number_of_chessboard:
                 return True
@@ -102,13 +105,8 @@ class NQueens:
 
     def get_solutions(self):
         """Retrieves solution for the given chessboard size."""
-
-        self.position = list(map(
-            lambda x: [
-                x // self.number_of_chessboard,
-                x % self.number_of_chessboard],
-                range(self.number_of_chessboard ** 2)
-                ))
+        cb = self.number_of_chessboard
+        self.position = list(map(lambda x: [x // cb, x % cb], range(cb ** 2)))
         self.create_solution(0, [])
 
     def display_solutions(self) -> None:
