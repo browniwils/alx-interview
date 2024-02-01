@@ -1,42 +1,28 @@
 #!/usr/bin/node
 
-/* eslint-disable */
 const request = require('request');
+const API_URL = 'https://swapi-api.hbtn.io/api';
 
-function character(filmID) {
-  const filmURlId = `https://swapi-api.alx-tools.com/api/films/${filmID}`;
-  return new Promise((resolve, reject) => {
-    request(filmURlId, (error, response, body) => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve(JSON.parse(body).characters);
-      }
-    });
+if (process.argv.length > 2) {
+  request(`${API_URL}/films/${process.argv[2]}/`, (err, _, body) => {
+    if (err) {
+      console.log(err);
+    }
+
+    const actor = JSON.parse(body).characters;
+
+    const actorName = actor.map(
+      url => new Promise((resolve, reject) => {
+        request(url, (promiseErr, __, charactersReqBody) => {
+          if (promiseErr) {
+            reject(promiseErr);
+          }
+          resolve(JSON.parse(charactersReqBody).name);
+        });
+      }));
+
+    Promise.all(actorName)
+      .then(names => console.log(names.join('\n')))
+      .catch(allErr => console.log(allErr));
   });
 }
-
-const starWarID = process.argv[2]
-character(starWarID)
-  .then((userEndPoints) => {
-    const requests = userEndPoints.map((element) => {
-      return new Promise((resolve, reject) => {
-        request(element, (error, response, body) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(JSON.parse(body).name);
-          }
-        });
-      });
-    });
-
-    Promise.all(requests)
-      .then((characterNames) => {
-        characterNames.forEach((name) => {
-          console.log(name);
-        });
-      })
-      .catch((error) => console.log(error));
-  })
-  .catch((error) => console.log(error));
