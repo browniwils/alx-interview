@@ -7,7 +7,6 @@ def isWinner(x, nums):
 
     if x < 1:
         return None
-
     if not nums:
         return None
 
