@@ -34,6 +34,6 @@ def isWinner(x, nums):
         return None
     if player_one["won"] > player_two["won"]:
         wins = player_one["name"]
-    else: 
+    else:
         wins = player_two["name"]
     return wins
